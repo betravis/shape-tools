@@ -7,16 +7,16 @@ function format() {
     var outerArgs = arguments;
     return outerArgs[0].replace(/{(\d+)}/g, function($0, $1) {
         var num = parseInt($1);
-        return (num >= 0 && num < outerArgs.length - 1) ? outerArgs[num + 1] : "";
+        return (num >= 0 && num < outerArgs.length - 1) ? outerArgs[num + 1] : '';
     });
 }
 function shapeInsideToSVG(shapeInside) {
     shapeInside = shapeInside.split(/[()]/);
     var command = shapeInside[0];
     var args = shapeInside[1].split(/,\s*/);
-    var result = "";
+    var result = '';
     switch(command) {
-        case "rectangle":
+        case 'rectangle':
             var rx = "", ry = "";
             if (args.length > 4) {
                 rx = "rx='" + args[4] + "'";
@@ -24,13 +24,13 @@ function shapeInsideToSVG(shapeInside) {
             }
             result = format("<rect x='{0}' y='{1}' width='{2}' height='{3}' {4} {5} />", args[0], args[1], args[2], args[3], rx, ry);
             break;
-        case "circle":
+        case 'circle':
             result = format("<circle cx='{0}' cy='{1}' r='{2} />", args[0], args[1], args[2]);
             break;
-        case "ellipse":
+        case 'ellipse':
             result = format("<ellipse cx='{0}' cy='{1}' rx='{2}' ry='{3}' />", args[0], args[1], args[2], args[3]);
             break;
-        case "polygon":
+        case 'polygon':
             var fillRule = (args[0].search(/nonzero|evenodd/i) >= 0 ? args.shift() : "nonzero");
             var points = args.reduce(function(prev, curr, index, arr) { return prev + (index > 0 ? " " : "") + curr.replace(/\s+/, ",").replace(/px/g, ""); }, "");
             result = format("<polygon fill-rule='{0}' points='{1}' />", fillRule, points);
@@ -45,8 +45,8 @@ function showShapeInside(elem, style, shape) {
     if (style.getPropertyValue('position') == 'static')
         elem.style.setProperty('position', 'relative');
     var div = document.createElement('div');
-    div.setAttribute("class", "shape-inside-bookmarklet-overlay");
-    div.setAttribute("style", "width:100%;height:100%;position:absolute;top:0;opacity:0.5");
+    div.setAttribute('class', 'shape-inside-bookmarklet-overlay');
+    div.setAttribute('style', 'width:100%;height:100%;position:absolute;top:0;opacity:0.5');
     div.innerHTML = svg;
     elem.appendChild(div);
 }
@@ -62,9 +62,10 @@ var button = null;
 function startBookmarklet() {
     if (button)
         return;
-    button = document.createElement("button");
-    button.setAttribute("style", "position:fixed;top:0;right:0");
-    button.innerHTML = "Exit ShowShapes";
+    button = document.createElement('button');
+    button.setAttribute('class', 'btn btn-inverse');
+    button.setAttribute('style', 'position:fixed;top:0;right:0');
+    button.innerHTML = 'Exit ShowShapes';
     button.onclick = endBookmarklet;
     document.body.appendChild(button);
     showShapeInsides();
@@ -72,12 +73,19 @@ function startBookmarklet() {
 function endBookmarklet() {
     document.body.removeChild(button);
     button = null;
-    var elems = document.getElementsByClassName("shape-inside-bookmarklet-overlay");
+    var elems = document.getElementsByClassName('shape-inside-bookmarklet-overlay');
     for (var i = 0; i < elems.length; i++) {
         var elem = elems[i];
         elem.parentNode.removeChild(elem);
     }
 }
-window.showShapesBookmarklet = startBookmarklet;
-startBookmarklet();
+!function() {
+    var link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('type', 'text/css');
+    link.setAttribute('href', 'http://betravis.github.com/shape-tools/css/bootstrap.min.css');
+    document.getElementsByTagName('head')[0].appendChild(link);
+    window.showShapesBookmarklet = startBookmarklet;
+    startBookmarklet();
+}()
 })()
