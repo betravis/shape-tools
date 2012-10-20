@@ -78,6 +78,6 @@ function endBookmarklet() {
         elem.parentNode.removeChild(elem);
     }
 }
-window.shapeInsideBookmarklet = startBookmarklet;
+window.showShapesBookmarklet = startBookmarklet;
 startBookmarklet();
 })()
