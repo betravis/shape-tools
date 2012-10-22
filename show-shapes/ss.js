@@ -1,6 +1,7 @@
 /**
  * Show Shapes Bookmarklet
  * Copyright (C) 2012
+ * This file will not be used until I start actually mini-fying ss.min.js
  */
 (function() {
 function format() {
