@@ -52,7 +52,7 @@ function shapeInsideToSVG(shapeInside, elem, style) {
         default:
     }
     /* eventually need to do font size & fill */
-    return "<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'><g fill='blue'>" + result + "</g></svg>";
+    return "<svg xmlns='http://www.w3.org/2000/svg' style='display:block' width='100%' height='100%'><g fill='blue'>" + result + "</g></svg>";
 }
 function showShapeInside(elem, style, shape) {
     var svg = shapeInsideToSVG(shape, elem, style);
