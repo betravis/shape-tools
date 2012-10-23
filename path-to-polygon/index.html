@@ -83,11 +83,19 @@ function pathToPointCommands( pathCommands ) {
                 case "c":
                     polygonCoords = reduceCoords(currentValue.coords, 6, [4, 5], previousValue);
                     break;
+                case 'Q':
                 case 'S':
                     polygonCoords = reduceCoords(currentValue.coords, 4, [2, 3], null);
                     break;
+                case 'q':
                 case 's':
                     polygonCoords = reduceCoords(currentValue.coords, 4, [2, 3], previousValue);
+                    break;
+                case 'A':
+                    polygonCoords = reduceCoords(currentValue.coords, 7, [5, 6], null);
+                    break;
+                case 'a':
+                    polygonCoords = reduceCoords(currentValue.coords, 7, [5, 6], previousValue);
                     break;
                 case "z":
                     break;
