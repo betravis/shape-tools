@@ -1,0 +1,217 @@
+<html>
+<head>
+<link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+<link rel='stylesheet' type='text/css' href='../css/shape-tools.css' />
+<script src='../js/raphael-min.js'></script>
+<script>
+    function ShapeOverlay(holder, width, height, numPoints) {
+        this.xs = [];
+        this.ys = [];
+        this.currIndex = -1;
+        this.shapeChangeListeners = [];
+
+        var overlay = this;
+        Raphael(holder, width, height, function() {
+            var r = overlay.paper = this;
+            var rect = r.rect(0, 0, width, height).attr({ fill: overlay.GREY, stroke: 'none', opacity: 0.2 });
+            overlay.points = r.set();
+            overlay.pointShields = r.set();
+            overlay.halfPoints = r.set();
+
+            overlay.path = r.path().attr('stroke-width', overlay.PATH_STROKE);
+            overlay.pathShield = r.path().attr({ 'stroke-width': overlay.ACTIVE_RADIUS, 'stroke-linejoin': 'round', opacity: 0});
+            overlay.pathShield.mouseover(overlay.showFunction(overlay.halfPoints, overlay.pathShield, overlay.halfPoints));
+
+            for (var i = 0; i < numPoints; i++) {
+                var point = overlay.radialToCartesian(100, Math.PI * 2 / numPoints * i);
+                overlay.addPoint(r, point.x + width / 2, point.y + height / 2, i);
+            }
+    
+            overlay.halfPoints.mouseover(overlay.showFunction(overlay.halfPoints, overlay.halfPoints, overlay.pathShield));
+        });
+    }
+    (function(constants) {
+        for (var constant in constants)
+            Object.defineProperty(ShapeOverlay.prototype, constant, { value: constants[constant] });
+    } ({    GREY: '#b3b3b3',
+            BLUE: '#008bce',
+            ORANGE: '#ff931e',
+            MIN_RADIUS: 5,
+            MAX_RADIUS: 7,
+            MIN_OPACITY: 0.5,
+            MAX_OPACITY: 1,
+            ANIM_TIME: 200,
+            ACTIVE_RADIUS: 7,
+            PATH_STROKE: 1  }));
+
+    ShapeOverlay.prototype.radialToCartesian = function(r, theta) { return { x: r * Math.cos(theta), y : r * Math.sin(theta) }; }
+    ShapeOverlay.prototype.showFunction = function(show, focus, unfocus) {
+        var overlay = this;
+        return function() {
+            show.animate({ opacity: overlay.MIN_OPACITY }, overlay.ANIM_TIME);
+            unfocus.unmouseout();
+            focus.mouseout(overlay.hideFunction(show));
+        };
+    }
+    ShapeOverlay.prototype.hideFunction = function(hide) {
+        var overlay = this;
+        return function() {
+            hide.animate({ opacity: 0 }, overlay.ANIM_TIME);
+        };
+    }
+    ShapeOverlay.prototype.removePoint = function(paper, x, y, i) {
+        if (this.xs.length < 3)
+            return;
+        this.xs.splice(i, 1);
+        this.ys.splice(i, 1);
+        this.pointShields.pop().remove();
+        this.points.pop().remove();
+        this.halfPoints.pop().remove();
+        for (var j = 0; j < this.xs.length; j++)
+            this.updatePoint(j, this.xs[j], this.ys[j]);
+    }
+    ShapeOverlay.prototype.addPoint = function(paper, x, y, i) {
+        var f;
+        (f = function(i, x, y, overlay) {
+            var halfPoint = paper.circle(x, y, overlay.MIN_RADIUS).attr({fill: overlay.BLUE, opacity: 0});
+            overlay.halfPoints.push(halfPoint);
+            halfPoint.dblclick(function() {
+                overlay.currIndex = i + 1;
+                overlay.addPoint(paper, halfPoint.attr('cx'), halfPoint.attr('cy'), i + 1);
+            });
+            var point = paper.circle(x, y, overlay.MIN_RADIUS).attr('fill', i == 0 ? overlay.ORANGE : overlay.BLUE);
+            overlay.points.push(point);
+            var pointShield = paper.circle(x, y, overlay.ACTIVE_RADIUS).attr({ fill:'#fff', opacity: 0 });
+            overlay.pointShields.push(pointShield);
+            
+            pointShield.mouseover(function() {
+                point.animate({ r: overlay.MAX_RADIUS }, overlay.ANIM_TIME);
+            }).mouseout(function() {
+                point.animate({ r: overlay.MIN_RADIUS }, overlay.ANIM_TIME);
+            }).drag(function(dx, dy) {
+                overlay.updatePoint(i, x + dx, y + dy);
+            }, function() {
+                x = overlay.xs[i];
+                y = overlay.ys[i];
+                if (overlay.currIndex != i) {
+                    overlay.currIndex = i;
+                    point.toFront();
+                    pointShield.toFront();
+                }
+            }, function() {
+                x = overlay.xs[i];
+                y = overlay.ys[i];
+            }).dblclick(function() {
+                overlay.removePoint(paper, x, y, i);
+            });
+        })(this.points.length, x, y, this);
+
+        if (i >= 0) {
+            this.halfPoints.attr('opacity', this.MIN_OPACITY);
+            this.halfPoints.unmouseover().mouseover(this.showFunction(this.halfPoints, this.halfPoints, this.pathShield));
+            this.xs.splice(i, 0, x);
+            this.ys.splice(i, 0, y);
+            for (var j = 0; j < this.xs.length; j++)
+                this.updatePoint(j, this.xs[j], this.ys[j]);
+        } else {
+            this.xs.push(x);
+            this.ys.push(y);
+        }
+    }
+    ShapeOverlay.prototype.drawPaths = function() {
+        var commands = ['M', this.xs[0], this.ys[0], 'L'];
+        for (var i = 1; i < this.xs.length; i++) {
+            commands.push(this.xs[i], this.ys[i]);
+        }
+        commands.push('z');
+        this.path.attr('path', commands);
+        this.pathShield.attr('path', commands);
+    }
+    ShapeOverlay.prototype.updateHalfPoint = function(i) {
+        var i2 = (i + 1) % this.halfPoints.length;
+        var x = (this.xs[i] + this.xs[i2]) / 2;
+        var y = (this.ys[i] + this.ys[i2]) / 2;
+        this.halfPoints.items[i].attr({ cx: x, cy: y });
+    }
+    ShapeOverlay.prototype.updatePoint = function(i, cx, cy) {
+        this.xs[i] = cx;
+        this.ys[i] = cy;
+        this.points.items[i].attr({ cx: cx, cy: cy });
+        if (i === this.currIndex)
+            this.points.items[i].animate({ r: this.MAX_RADIUS }, this.ANIM_TIME);
+        this.pointShields.items[i].attr({ cx: cx, cy: cy });
+        this.updateHalfPoint(i);
+        this.updateHalfPoint((i + this.halfPoints.length - 1) % this.halfPoints.length);
+        this.drawPaths();
+        this.notifyListeners();
+    }
+    ShapeOverlay.prototype.notifyListeners = function() {
+        for (var listener in this.shapeChangeListeners)
+            this.shapeChangeListeners[listener]();
+    }
+    ShapeOverlay.prototype.shapechange = function(callback) {
+        this.shapeChangeListeners.push(callback);
+    }
+    ShapeOverlay.prototype.unshapechange = function() {
+        this.shapeChangeListeners.clear();
+    }
+    var overlay = new ShapeOverlay('holder', 400, 400, 6);
+    overlay.shapechange(function() {
+        var elem = document.getElementById('coords');
+        var coords = [];
+        for (var i in overlay.xs)
+            coords.push(overlay.xs[i].toFixed(2) + 'px ' + overlay.ys[i].toFixed(2) + 'px');
+        coords = coords.join(',');
+        elem.innerHTML = 'polygon(' + coords + ')';
+        elem = document.getElementById('shape-inside');
+        elem.style.setProperty('-webkit-shape-inside', 'polygon(' + coords + ')');    
+    });
+</script>
+<style>
+#shape-inside {
+    position: absolute;
+    top: 0; left: 0;
+    width: 400px;
+    height: 400px;
+    -webkit-hyphens: auto;
+}
+#holder {
+    position: absolute;
+    left: 0; top: 0;
+    width: 400px;
+    height: 100px;
+}
+</style>
+</head>
+<body>
+<div class='navbar navbar-inverse navbar-fixed-top'>
+    <div class='navbar-inner'>
+        <div class='container'>
+            <a class='brand' href='../'>Shape Tools</a>
+            <ul class='nav'>
+                <li><a href='../show-shapes/'>Show Shapes</a></li>
+                <li><a href='../path-to-polygon/'>Path to Poly</a></li>
+                <li class='active'><a href='#'>Poly Draw</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class='container'>
+    <header class='jumbotron subhead'>
+        <h1>Polygon Drawing</h1>
+        <p class='lead'>Use the interface below to try out creating a CSS polygon shape inside. Double-click a half-point to add a new point, or double-click an existing point to remove it.</p>
+    </header>
+    <div class='row'>
+        <div class='span6' style='position:relative'>
+            <div id='shape-inside'>
+                Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, "and what is the use of a book," thought Alice, "without pictures or conversations?"
+                <!--<p>So she was considering, in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.
+                <p>There was nothing so very remarkable in that; nor did Alice think it so very much out of the way to hear the Rabbit say to itself, "Oh dear! Oh dear! I shall be too late!" (when she thought it over afterwards, it occurred to her that she ought to have wondered at this, but at the time it all seemed quite natural); but, when the Rabbit actually took a watch out of his waistcoat-pocket, and looked at it, and then hurried on, Alice started to her feet, for it flashed across her mind that she had never before seen a rabbit with either a waistcoat-pocket, or a watch to take out of it, and, burning with curiosity, she ran across the field after it, and was just in time to see it pop down a large rabbit-hole under the hedge.-->
+            </div>
+            <div id='holder'></div>
+        </div>
+        <div class='span6' id="coords"></div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,6 +1,8 @@
 <html>
 <head>
 <link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+<link rel='stylesheet' type='text/css' href='../css/font-awesome.css' />
+<link rel='stylesheet' type='text/css' href='../css/shape-tools.css' />
 <script type='text/javascript' src='../js/dat.gui.min.js'></script>
 <script>
 var settings = {
@@ -204,26 +206,46 @@ output {
 </style>
 </head>
 <body>
-<h1>Path to Polygon Converter</h1>
-<p>Use this to convert svg paths into polygons suitable for use as CSS Shapes. To get started, pick a file and choose the settings you would like in the upper right.</p>
-<div style="position:absolute;top:0;right:0" id="my-gui-container">
-<input id="files" type="file" name="files[]"></input>
+<div class='navbar navbar-inverse navbar-fixed-top'>
+    <div class='navbar-inner'>
+        <div class='container'>
+            <a class='brand' href='../'>Shape Tools</a>
+            <ul class='nav'>
+                <li><a href='../show-shapes/'>Show Shapes</a></li>
+                <li class='active'><a href='#'>Path to Poly</a></li>
+                <li><a href='../polygon-drawing/'>Poly Draw</a></li>
+            </ul>
+        </div>
+    </div>
 </div>
-<figure>
-    <figcaption>Input Preview (with Paths)</figcaption>
-    <div id="svg-original">
-    <svg width="200" height="200">
-        <path fill="#cecece" d='m0,0 100,0 0,100-100 0z' />
-        <path fill='#cecece' d='m100,100c0,0,0,0,100,0,0,0,0,0,0,100,0,0,0,0,-100,0z' />
-    </svg>
-    </div>
-</figure>
-<figure>
-    <figcaption>Output Preview (with Polygons)</figcaption>
-    <div id="svg-result">
-    </div>
-</figure>
-<output id="viewbox"></output>
-<output id="output"></output>
+<div class='container'>
+    <header class='jumbotron subhead'>
+        <div class='row'>
+            <div class='span8'>
+                <h1>Path to Polygon Converter</h1>
+                <p class='lead'>Use this to convert svg paths into polygons suitable for use as CSS Shapes. To get started, pick a file and choose the settings you would like to the right.</p>
+            </div>
+            <div class='span4' id="my-gui-container">
+                <input id="files" type="file" name="files[]"></input>
+            </div>
+        </div>
+    </header>
+    <figure>
+        <figcaption>Input Preview (with Paths)</figcaption>
+        <div id="svg-original">
+        <svg width="200" height="200">
+            <path fill="#cecece" d='m0,0 100,0 0,100-100 0z' />
+            <path fill='#cecece' d='m100,100c0,0,0,0,100,0,0,0,0,0,0,100,0,0,0,0,-100,0z' />
+        </svg>
+        </div>
+    </figure>
+    <figure>
+        <figcaption>Output Preview (with Polygons)</figcaption>
+        <div id="svg-result">
+        </div>
+    </figure>
+    <output id="viewbox"></output>
+    <output id="output"></output>
+</div>
 </body>
 </html>
