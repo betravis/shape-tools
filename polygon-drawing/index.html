@@ -5,6 +5,7 @@
 <link rel='stylesheet' type='text/css' href='../css/shape-tools.css' />
 <script src='../js/raphael-min.js'></script>
 <script src='../js/shape-test.js'></script>
+<script src='../js/dat.gui.min.js'></script>
 <script>
     function ShapeOverlay(holder, width, height, numPoints) {
         this.xs = [];
@@ -13,9 +14,9 @@
         this.shapeChangeListeners = [];
 
         var overlay = this;
-        Raphael(holder, width, height, function() {
+        Raphael(holder, '100%', '100%', function() {
             var r = overlay.paper = this;
-            var rect = r.rect(0, 0, width, height).attr({ fill: overlay.GREY, stroke: 'none', opacity: 0.2 });
+            var rect = r.rect(0, 0, '100%', '100%').attr({ fill: overlay.GREY, stroke: 'none', opacity: 0.2 });
             overlay.points = r.set();
             overlay.pointShields = r.set();
             overlay.halfPoints = r.set();
@@ -25,7 +26,7 @@
             overlay.pathShield.mouseover(overlay.showFunction(overlay.halfPoints, overlay.pathShield, overlay.halfPoints));
 
             for (var i = 0; i < numPoints; i++) {
-                var point = overlay.radialToCartesian(100, Math.PI * 2 / numPoints * i);
+                var point = overlay.radialToCartesian(Math.min(width, height) / 3, Math.PI - Math.PI * 2 / numPoints * i);
                 overlay.addPoint(r, point.x + width / 2, point.y + height / 2, i);
             }
     
@@ -168,20 +169,49 @@
         elem = document.getElementById('shape-inside');
         elem.style.setProperty('-webkit-shape-inside', 'polygon(' + coords + ')');    
     });
+    
+    var settings = {
+        width: 400,
+        height: 400,
+        copy: function() {
+            window.prompt('Copy to clipboard: Cmd/Ctl+C, Enter',  document.getElementById('coords').innerHTML);
+        }
+    };
+    
+    window.onload = function() {
+        var gui = new dat.GUI({ autoPlace: false });
+        document.getElementById('my-gui-container').appendChild(gui.domElement);
+        
+        gui.add(settings, 'width').min(200).max(800).step(1).onChange(
+            function(value) {
+                document.getElementById('content-holder').style.setProperty('width', value + 'px');
+            }
+        );
+        gui.add(settings, 'height').min(200).max(800).step(1).onChange(
+            function(value) {
+                document.getElementById('content-holder').style.setProperty('height', value + 'px');
+            }
+        );
+        gui.add(settings, 'copy');
+    };
 </script>
 <style>
 #shape-inside {
     position: absolute;
     top: 0; left: 0;
-    width: 400px;
-    height: 400px;
-    -webkit-hyphens: auto;
+    right: 0; bottom: 0;
+    overflow: hidden;
 }
 #holder {
     position: absolute;
     left: 0; top: 0;
+    right: 0; bottom: 0;
+}
+#content-holder {
+    position: relative;
     width: 400px;
-    height: 100px;
+    height: 400px;
+    margin: 0 auto;
 }
 </style>
 </head>
@@ -200,20 +230,23 @@
 </div>
 <div class='container'>
     <header class='jumbotron subhead'>
-        <h1>Polygon Drawing</h1>
-        <p class='lead'>Use the interface below to try out creating a CSS polygon shape inside. Double-click a half-point to add a new point, or double-click an existing point to remove it.</p>
-    </header>
-    <div class='row'>
-        <div class='span6' style='position:relative'>
-            <div id='shape-inside'>
-                Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, "and what is the use of a book," thought Alice, "without pictures or conversations?"
-                <!--<p>So she was considering, in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.
-                <p>There was nothing so very remarkable in that; nor did Alice think it so very much out of the way to hear the Rabbit say to itself, "Oh dear! Oh dear! I shall be too late!" (when she thought it over afterwards, it occurred to her that she ought to have wondered at this, but at the time it all seemed quite natural); but, when the Rabbit actually took a watch out of his waistcoat-pocket, and looked at it, and then hurried on, Alice started to her feet, for it flashed across her mind that she had never before seen a rabbit with either a waistcoat-pocket, or a watch to take out of it, and, burning with curiosity, she ran across the field after it, and was just in time to see it pop down a large rabbit-hole under the hedge.-->
+        <div class='row'>
+            <div class='span8'>
+                <h1>Polygon Drawing</h1>
+                <p class='lead'>Use the interface below to try out creating a CSS polygon shape inside. Double-click a half-point to add a new point, or double-click an existing point to remove it.</p>
             </div>
-            <div id='holder'></div>
+            <div class='span4' id='my-gui-container'></div>
         </div>
-        <div class='span6' id="coords"></div>
+    </header>
+    <div id='content-holder'>
+        <div id='shape-inside'>
+            <br/>Alice was be&shy;gin&shy;ning to get very tired of sit&shy;ting by her sis&shy;ter on the bank, and of hav&shy;ing noth&shy;ing to do: once or twice she had peeped into the book her sis&shy;ter was read&shy;ing, but it had no pic&shy;tures or con&shy;ver&shy;sa&shy;tions in it, "and what is the use of a book," thought Alice, "with&shy;out pic&shy;tures or con&shy;ver&shy;sa&shy;tions?"
+            So she was con&shy;sid&shy;er&shy;ing, in her own mind (as well as she could, for the hot day made her feel very sleepy and stu&shy;pid), whether the plea&shy;sure of mak&shy;ing a daisy-chain would be worth the trou&shy;ble of get&shy;ting up and pick&shy;ing the daisies, when sud&shy;denly a White Rab&shy;bit with pink eyes ran close by her.
+            There was noth&shy;ing so very re&shy;mark&shy;able in that; nor did Alice think it so very much out of the way to hear the Rab&shy;bit say to it&shy;self, "Oh dear! Oh dear! I shall be too late!" (when she thought it over af&shy;ter&shy;wards, it oc&shy;curred to her that she ought to have won&shy;dered at this, but at the time it all seemed quite nat&shy;ural); but, when the Rab&shy;bit ac&shy;tu&shy;ally took a watch out of his waist&shy;coat-pocket, and looked at it, and then hur&shy;ried on, Alice started to her feet, for it flashed across her mind that she had never be&shy;fore seen a rab&shy;bit with ei&shy;ther a waist&shy;coat-pocket, or a watch to take out of it, and, burn&shy;ing with cu&shy;rios&shy;ity, she ran across the field after it, and was just in time to see it pop down a large rab&shy;bit-hole under the hedge.
+        </div>
+        <div id='holder'></div>
     </div>
+    <div id="coords"></div>
 </div>
 </body>
 </html>
