@@ -1,0 +1,48 @@
+<html lang='en'>
+<head>
+<link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+<link rel='stylesheet' type='text/css' href='../css/shape-tools.css' />
+<script src='../js/Hyphenator.js'></script>
+<script>
+/*    window.onload = function() {
+        document.getElementById('myform').onsubmit = function(e) {
+            if (e && e.preventDefault)
+                e.preventDefault();
+            else if (window.event)
+                window.event.returnValue = false;
+            Hyphenator.run();
+        }
+    }
+    function doStuff() {
+        Hyphenator.config({
+            safecopy: false
+        });
+        Hyphenator.run();
+    }*/
+</script>
+</head>
+<body>
+<div class='navbar navbar-inverse navbar-fixed-top'>
+    <div class='navbar-inner'>
+        <div class='container'>
+            <a class='brand' href='../'>Shape Tools</a>
+            <ul class='nav'>
+                <li><a href='../show-shapes/'>Show Shapes</a></li>
+                <li><a href='../path-to-polygon/'>Path to Poly</a></li>
+                <li><a href='../polygon-drawing/'>Poly Draw</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class='container'>
+    <header class='jumbotron subhead'>
+        <h1>CSS Shape Tools</h1>
+        <p class='lead'>Making <a href="http://dev.w3.org/csswg/css3-exclusions/">CSS Shapes and Exclusions</a> even easier.</p>
+    </header>
+    <form action='#' method='post' id='myform'>
+        <textarea id='text' class='hyphenate'></textarea>
+        <input type='submit' class='btn btn-primary' value='Hyphenate' />
+    </form>
+</div>
+</body>
+</html>
