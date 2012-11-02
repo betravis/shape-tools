@@ -159,29 +159,32 @@
         this.shapeChangeListeners.clear();
     }
     var overlay = new ShapeOverlay('holder', 400, 400, 6);
-    overlay.shapechange(function() {
+    var computePolygon = function() {
         var elem = document.getElementById('coords');
         var coords = [];
+        var scaleX = settings.units === 'px' ? 1 : 100 / settings.width;
+        var scaleY = settings.units === 'px' ? 1 : 100 / settings.height;
         for (var i in overlay.xs)
-            coords.push(overlay.xs[i].toFixed(2) + 'px ' + overlay.ys[i].toFixed(2) + 'px');
+            coords.push((overlay.xs[i] * scaleX).toFixed(2) + settings.units + ' '
+                        + (overlay.ys[i] * scaleY).toFixed(2) + settings.units);
         coords = coords.join(',');
         elem.innerHTML = 'polygon(' + coords + ')';
         elem = document.getElementById('shape-inside');
-        elem.style.setProperty('-webkit-shape-inside', 'polygon(' + coords + ')');    
-    });
-    
+        elem.style.setProperty('-webkit-shape-inside', 'polygon(' + coords + ')');
+    };
+    overlay.shapechange(computePolygon);
     var settings = {
         width: 400,
         height: 400,
+        units: 'px',
         copy: function() {
             window.prompt('Copy to clipboard: Cmd/Ctl+C, Enter',  document.getElementById('coords').innerHTML);
         }
     };
-    
     window.onload = function() {
         var gui = new dat.GUI({ autoPlace: false });
         document.getElementById('my-gui-container').appendChild(gui.domElement);
-        
+
         gui.add(settings, 'width').min(200).max(800).step(1).onChange(
             function(value) {
                 document.getElementById('content-holder').style.setProperty('width', value + 'px');
@@ -192,6 +195,7 @@
                 document.getElementById('content-holder').style.setProperty('height', value + 'px');
             }
         );
+        gui.add(settings, 'units', ['px', '%']).onChange(computePolygon);
         gui.add(settings, 'copy');
     };
 </script>
