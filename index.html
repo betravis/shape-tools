@@ -1,49 +1,40 @@
-<html>
-<head>
-    <title>Tools for CSS Shapes</title>
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-    <link rel='stylesheet' type='text/css' href='css/font-awesome.css' />
-    <link rel='stylesheet' type='text/css' href='css/shape-tools.css' />
-    <script src='js/shape-test.js'></script>
-</head>
-<body>
-<div class='navbar navbar-inverse navbar-fixed-top'>
-    <div class='navbar-inner'>
-        <div class='container'>
-            <a class='brand' href='#'>Shape Tools</a>
-            <ul class='nav'>
-                <li><a href='show-shapes/'>Show Shapes</a></li>
-                <li><a href='path-to-polygon/'>Path to Poly</a></li>
-                <li><a href='polygon-drawing/'>Poly Draw</a></li>
-            </ul>
-        </div>
-    </div>
+---
+layout: default
+title: CSS Shape Tools
+lead: Making <a href="http://dev.w3.org/csswg/css3-exclusions/">CSS Shapes and Exclusions</a> even easier.
+shapetest: true
+items: 
+ - 
+  span: span4
+  icon: icon-bookmark
+  name: Show Shapes
+  content: |
+   <p>This bookmarklet will display the CSS shapes on a page. You can drag it up to your bookmarks bar to start using it immediately, or check out the Show Shapes page for more information.<p>
+   <p><a class="btn" href="javascript:(function(){if(window.showShapesBookmarklet){window.showShapesBookmarklet()}else{document.body.appendChild(document.createElement('script')).src='http://betravis.github.com/shape-tools/show-shapes/ss.min.js';}})();">Bookmarklet</a>
+   <a class='btn btn-primary' href='show-shapes/'>More Info</a></p>
+ - 
+  span: span4
+  icon: icon-cogs
+  name: Path to Poly
+  content: |
+   <p>Use SVG paths to generate CSS polygons appropriate for use with shape-inside and shape-outside.
+   <p><a class='btn btn-primary' href='path-to-polygon/'>Try It Out</a></p>
+ - 
+  span: span4
+  icon: icon-pencil
+  name: Poly Draw
+  content: |
+   <p>Try your hand at creating a shape-inside by hand using this interactive tool.</p>
+   <p><a class='btn btn-primary' href='polygon-drawing/'>Try It Out</a></p>
+ - 
+  span: span4
+  icon: icon-align-justify
+  name: Hyphenator
+  content: |
+   <p>Add soft hyphens to text to make content more closely fit to its bounding area.</p>
+   <p><a class='btn btn-primary' href='hyphenator/'>Try It Out</a></p>
+---
+{% include jumbotron.html %}
+<ul class='thumbnails'>
+    {% for item in page.items %}{% include thumbnail.html %}{% endfor %}
 </div>
-<div class='container'>
-    <header class='jumbotron subhead'>
-        <h1>CSS Shape Tools</h1>
-        <p class='lead'>Making <a href="http://dev.w3.org/csswg/css3-exclusions/">CSS Shapes and Exclusions</a> even easier.</p>
-    </header>
-    <div class='row'>
-        <div class='span4'>
-            <h3><i class='icon-bookmark muted'></i> Show Shapes</h3>
-            <p>This bookmarklet will display the CSS shapes on a page. You can drag it up to your bookmarks bar to start using it immediately, or check out the Show Shapes page for more information.<p>
-            <p><a class="btn" href="javascript:(function(){if(window.showShapesBookmarklet){window.showShapesBookmarklet()}else{document.body.appendChild(document.createElement('script')).src='http://betravis.github.com/shape-tools/show-shapes/ss.min.js';}})();">Bookmarklet</a>
-            <a class='btn btn-primary' href='show-shapes/'>More Info</a></p>
-        </div>
-        
-        <div class='span4'>
-            <h3><i class='icon-cogs muted'></i> Path to Poly</h3>
-            <p>Use SVG paths to generate CSS polygons appropriate for use with shape-inside and shape-outside.
-            <p><a class='btn btn-primary' href='path-to-polygon/'>Try It Out</a></p>
-        </div>
-        
-        <div class='span4'>
-            <h3><i class='icon-pencil muted'></i> Poly Draw</h3>
-            <p>Try your hand at creating a shape-inside by hand using this interactive tool.</p>
-            <p><a class='btn btn-primary' href='polygon-drawing/'>Try It Out</a></p>
-        </div>
-    </div>
-</div>
-</body>
-</html>

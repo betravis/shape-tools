@@ -1,48 +1,44 @@
-<html lang='en'>
-<head>
-<link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
-<link rel='stylesheet' type='text/css' href='../css/shape-tools.css' />
-<script src='../js/Hyphenator.js'></script>
-<script>
-/*    window.onload = function() {
-        document.getElementById('myform').onsubmit = function(e) {
-            if (e && e.preventDefault)
-                e.preventDefault();
-            else if (window.event)
-                window.event.returnValue = false;
-            Hyphenator.run();
+---
+layout: default
+title: Hyphenator
+lead: >
+    Still waiting for <a href='http://www.w3.org/TR/css3-text/#hyphenation'>CSS3 Hyphenation</a>
+    support? This tool will help you insert soft hyphens.
+script: |
+    <script src='../js/Hyphenator.min.js'></script>
+    <script src='../js/patterns/en-us.js'></script>
+    <script>
+        window.onload = function() {
+            Hyphenator.config({ safecopy: false });
         }
+        function formSubmit() {
+            var text = document.getElementById('text');
+            var value = text.value;
+            value = Hyphenator.hyphenate(value, 'en-us');
+            text.value = value;
+        }
+    </script>
+style: |
+    <link rel='stylesheet' type='text/css' href='../css/bootstrap-forms.min.css' />
+    <style>
+    textarea {
+        min-width: 200px;
+        min-height: 200px;
     }
-    function doStuff() {
-        Hyphenator.config({
-            safecopy: false
-        });
-        Hyphenator.run();
-    }*/
-</script>
-</head>
-<body>
-<div class='navbar navbar-inverse navbar-fixed-top'>
-    <div class='navbar-inner'>
-        <div class='container'>
-            <a class='brand' href='../'>Shape Tools</a>
-            <ul class='nav'>
-                <li><a href='../show-shapes/'>Show Shapes</a></li>
-                <li><a href='../path-to-polygon/'>Path to Poly</a></li>
-                <li><a href='../polygon-drawing/'>Poly Draw</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-<div class='container'>
-    <header class='jumbotron subhead'>
-        <h1>CSS Shape Tools</h1>
-        <p class='lead'>Making <a href="http://dev.w3.org/csswg/css3-exclusions/">CSS Shapes and Exclusions</a> even easier.</p>
-    </header>
-    <form action='#' method='post' id='myform'>
-        <textarea id='text' class='hyphenate'></textarea>
-        <input type='submit' class='btn btn-primary' value='Hyphenate' />
-    </form>
-</div>
-</body>
-</html>
+    .footer {
+        margin-top: 2em;
+    }
+    </style>
+---
+{% include jumbotron.html %}
+<form style='margin: 0 auto'>
+    <textarea id='text' class='hyphenate'>
+Try out your own text below...
+
+"I tell thee again, Gabriel, that&mdash;" But again the boat tore ahead as if dragged by fiends. Nothing was said for some moments, while a succession of riotous waves rolled by, which by one of those occasional caprices of the seas were tumbling, not heaving it. Meantime, the hoisted sperm whale's head jogged about very violently, and Gabriel was seen eyeing it with rather more apprehensiveness than his archangel nature seemed to warrant.
+    </textarea>
+    <input type='button' style='display:block' class='btn btn-primary' value='Hyphenate' onclick='formSubmit()'/>
+</form>
+<p class='footer'>This demo uses the <a href='http://code.google.com/p/hyphenator/'>Hyphenator</a>
+Library. Hyphenator offers support for dynamically modifying the text on your
+web page, or even running as a bookmarklet.</p>

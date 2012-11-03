@@ -1,0 +1,45 @@
+---
+navbar:
+ - 
+  folder: show-shapes
+  name: Show Shapes
+ -
+  folder: path-to-polygon
+  name: Path to Poly
+ -
+  folder: polygon-drawing
+  name: Poly Draw
+ - 
+  folder: hyphenator
+  name: Hyphenator
+---
+{% include copyright.html %}
+<!DOCTYPE HTML>
+<html lang='en'>
+<head>
+<link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+<link rel='stylesheet' type='text/css' href='../css/font-awesome.css' />
+<link rel='stylesheet' type='text/css' href='../css/shape-tools.css' />
+{% if page.style %}{{ page.style }}{% endif %}
+{% if page.shapetest %}<script type='text/javascript' src='../js/shape-test.js'></script>{% endif %}
+{% if page.script %}{{ page.script }}{% endif %}
+<title>{{ page.title }}</title>
+</head>
+<body>{% assign folder = page.url | remove_first:'/' | split:'/' | first %}
+<div class='navbar navbar-inverse navbar-fixed-top'>
+    <div class='navbar-inner'>
+        <div class='container'>
+            <a class='brand' href='../'>Shape Tools</a>
+            <ul class='nav'>{% for item in page.navbar %}
+                {% if folder == item.folder %}{{ "<li class='active'><a href='#'>" }}{% else %}{{ "<li><a href='../" | append: item.folder | append: "/'>" }}{% endif %}
+                    {{ item.name }}
+                {{ '</a></li>' }}{% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<div class='container'>
+{{ content }}
+</div>
+</body>
+</html>

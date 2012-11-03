@@ -1,4 +1,3 @@
-shape-tools
-===========
+# shape-tools
 
 Collection of tools for working with CSS shapes
