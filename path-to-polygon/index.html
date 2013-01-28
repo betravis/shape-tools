@@ -21,103 +21,6 @@ script: |
         units: '',
         precision: 3
     };
-    function pathDataToCommands( pathData ) {
-        // Assume we've only got one path
-        // Only one 'm' command, at the beginning
-        // Only one 'z' command, at the end
-        var commands = new Array();
-        var regexp = /\s*(m|z|l|h|v|c|s)((?:(?:\s*,?\s*)?(?:-?\d+(?:\.\d+)?))*)/gi;
-        pathData = pathData.replace(regexp, 
-            function($0, $1, $2) {
-                var numbers = $2.match(/-?\d+(?:\.\d+)?/g);
-                for (var i in numbers)
-                    numbers[i] = parseFloat(numbers[i]);
-                var command = {
-                    command: $1, 
-                    coords: numbers
-                };
-                commands.push(command);
-                return "";
-            });
-        return (pathData === '' ? commands : []);
-    }
-    function reduceCoords(coordinates, coordinatesInPoint, offsets, relativeTo) {
-        var polygonPoints = [];
-        for(var i = 0; i < coordinates.length; i+= coordinatesInPoint) {
-            offsets.forEach(function(offset) {
-                var point = coordinates[i + offset];
-                if (relativeTo) {
-                    if (polygonPoints.length >= offsets.length)
-                        point += polygonPoints[polygonPoints.length - offsets.length];
-                    else if (relativeTo.length >= offsets.length)
-                        point += relativeTo[relativeTo.length - offsets.length + polygonPoints.length];
-                }
-                polygonPoints.push(point);
-            });
-        }
-        return polygonPoints;
-    }
-    function pathToPointCommands( pathCommands ) { 
-        return pathCommands.reduce(
-            function(previousValue, currentValue, index, array) {
-                if (!previousValue)
-                    return null;
-                var polygonCoords = [];
-                switch (currentValue.command) {
-                    case "M":
-                    case "L":
-                    case "T": // smooth bezier
-                        polygonCoords = currentValue.coords;
-                        break;
-                    case "m":
-                    case "l":
-                    case "t": // smooth bezier
-                        polygonCoords = reduceCoords(currentValue.coords, 2, [0, 1], previousValue);
-                        break;
-                    case "H":
-                        for (var i = 0; i < currentValue.coords.length; i++) {
-                            polygonCoords[i] = currentValue.coords[i];
-                            polygonCoords[i + 1] = previousValue[previousValue.length - 1];
-                        }
-                        break;
-                    case "h":
-                        for (var i = 0; i < currentValue.coords.length; i++) {
-                            if (i >= 1)
-                                polygonCoords[i] = currentValue.coords[i] + polygonCoords[polygonCoords.length - 2];
-                            else
-                                polygonCoords[i] = currentValue.coords[i] + previousValue[previousValue.length - 2 + i];
-                            polygonCoords[i + 1] = previousValue[previousValue.length - 1];
-                        }
-                        break;
-                    case "C":
-                        polygonCoords = reduceCoords(currentValue.coords, 6, [4, 5], null);
-                        break;
-                    case "c":
-                        polygonCoords = reduceCoords(currentValue.coords, 6, [4, 5], previousValue);
-                        break;
-                    case 'Q':
-                    case 'S':
-                        polygonCoords = reduceCoords(currentValue.coords, 4, [2, 3], null);
-                        break;
-                    case 'q':
-                    case 's':
-                        polygonCoords = reduceCoords(currentValue.coords, 4, [2, 3], previousValue);
-                        break;
-                    case 'A':
-                        polygonCoords = reduceCoords(currentValue.coords, 7, [5, 6], null);
-                        break;
-                    case 'a':
-                        polygonCoords = reduceCoords(currentValue.coords, 7, [5, 6], previousValue);
-                        break;
-                    case "z":
-                        break;
-                    default:
-                        console.log("Unknown command: " + currentValue.command + "\n");
-                        return null;
-                }
-                return previousValue.concat(polygonCoords)
-            }, []);
-    }
     function pointCommandsToSVGPoints(pointCommands) {
         return pointCommands.map(function(value, index, array) {
             return ((index % 2 == 1) ? ',' : ' ') + value;
@@ -128,6 +31,63 @@ script: |
             return  (value / (index % 2 == 0 ? settings.divideXBy : settings.divideYBy)).toFixed(settings.precision)
                     + settings.units + ((index % 2 == 1 && index < array.length - 1) ? ',' : '');
         }).join(' ');
+    }
+    function pathToPoints(segments) {
+        var count = segments.numberOfItems;
+        var result = [], segment, x, y;
+        for (var i = 0; i < count; i++) {
+            segment = segments.getItem(i);
+            switch(segment.pathSegType) {
+                case SVGPathSeg.PATHSEG_MOVETO_ABS:
+                case SVGPathSeg.PATHSEG_LINETO_ABS:
+                case SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS:
+                case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS:
+                case SVGPathSeg.PATHSEG_ARC_ABS:
+                case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS:
+                case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS:
+                    x = segment.x;
+                    y = segment.y;
+                    break;
+                
+                case SVGPathSeg.PATHSEG_MOVETO_REL:                
+                case SVGPathSeg.PATHSEG_LINETO_REL:
+                case SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL:
+                case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL:
+                case SVGPathSeg.PATHSEG_ARC_REL:
+                case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL:
+                case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL:
+                    x = segment.x;
+                    y = segment.y;
+                    if (result.length > 0) {
+                        x += result[result.length - 2];
+                        y += result[result.length - 1];
+                    }
+                    break;
+                
+                case SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS:
+                    x = segment.x;
+                    y = result[result.length - 1];
+                    break;
+                case SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL:
+                    x = result[result.length - 2] + segment.x;
+                    y = result[result.length - 1];
+                    break;
+
+                case SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS:
+                    x = result[result.length - 2];
+                    y = segment.y;
+                    break;
+                case SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL:
+                    x = result[result.length - 2];
+                    y = segment.y + result[result.length - 1];
+                    break;
+                case SVGPathSeg.PATHSEG_CLOSEPATH:
+                    return result;
+                default:
+                    console.log('unknown path command: ', segment.pathSegTypeAsLetter);
+            }
+            result.push(x, y);
+        }
     }
     function crunch() {
         var svg = document.querySelector('#svg-original svg');
@@ -141,16 +101,15 @@ script: |
         var cssPolygons = ['<ul>'];
         for (var i = 0; i < paths.length; i++) {
             var path = paths[i];
-            var pathCommands = pathDataToCommands(path.getAttribute('d'));
-            var pointCommands = pathToPointCommands(pathCommands);
-            var polygonSVGPoints = pointCommandsToSVGPoints(pointCommands);
+            var points = pathToPoints(path.pathSegList);
+            var polygonSVGPoints = pointCommandsToSVGPoints(points);
     
             var polygon = document.createElementNS('http://www.w3.org/2000/svg','polygon');
             polygon.setAttributeNS(null, 'fill', '#cecece');
             polygon.setAttributeNS(null, 'points', polygonSVGPoints);
             path.parentNode.replaceChild(polygon, path);
     
-            cssPolygons.push('<li>', 'polygon(', pointCommandsToCSSPoints(pointCommands, settings), ')', '</li>');
+            cssPolygons.push('<li>', 'polygon(', pointCommandsToCSSPoints(points, settings), ')', '</li>');
         }
         cssPolygons.push('</ul>');
         document.getElementById('output').innerHTML = cssPolygons.join('');
