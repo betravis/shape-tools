@@ -12,9 +12,9 @@ function format() {
 }
 function shapeInsideToSVG(shapeInside, elem, style) {
     shapeInside = shapeInside.split(/[()]/);
-    var command = shapeInside[0];
-    var args = shapeInside[1].split(/\s*,\s*/);
-    var result = '';
+    var command = shapeInside[0], args, result = '';
+    if (shapeInside.length > 1)
+        args = shapeInside[1].split(/\s*,\s*/);
     switch(command) {
         case 'rectangle':
             var rx = "", ry = "";
@@ -50,12 +50,15 @@ function shapeInsideToSVG(shapeInside, elem, style) {
             result = format("<polygon fill-rule='{0}' points='{1}' />", fillRule, points);
             break;
         default:
+            return null;
     }
     /* eventually need to do font size & fill */
     return "<svg xmlns='http://www.w3.org/2000/svg' style='display:block' width='100%' height='100%'><g fill='blue'>" + result + "</g></svg>";
 }
 function showShapeInside(elem, style, shape) {
     var svg = shapeInsideToSVG(shape, elem, style);
+    if (!svg)
+        return;
     if (style.getPropertyValue('position') == 'static')
         elem.style.setProperty('position', 'relative');
     var div = document.createElement('div');
@@ -69,8 +72,11 @@ function showShapeInsides() {
     for (var i = 0; i < elems.length; i++) {
         var elem = elems[i];
         var style = getComputedStyle(elem);
-        if (style && style.getPropertyValue('-webkit-shape-inside') != 'auto')
-            showShapeInside(elem, style, style.getPropertyValue('-webkit-shape-inside'));
+        var shape = style.getPropertyValue('-webkit-shape-inside');
+        if (shape == 'outside-shape')
+            shape = style.getPropertyValue('-webkit-shape-outside');
+        if (shape != 'auto')
+            showShapeInside(elem, style, shape);
     }
 }
 var shapesOn = false;
