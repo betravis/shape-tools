@@ -1,0 +1,73 @@
+---
+layout: default
+title: Exclusion Punch
+lead: >
+    While you're waiting for <a href='http://dev.w3.org/csswg/css3-exclusions/#exclusions'>CSS3 Exclusions</a>
+    support, why not try out a shape-inside version?
+script: |
+    <script src='clipper.js'></script>
+    <script src='exclusion-punch.js'></script>
+    <script src='../js/prettify/prettify.js'></script>
+    <script>
+        window.onload = function() {
+          ExclusionPunch.run();
+          var shapes = document.querySelectorAll('.shape');
+          for (var i = 0; i < shapes.length; i++)
+            shapes[i].innerHTML = shapes[i].innerHTML;
+          prettyPrint();
+        }
+    </script>
+style: |
+    <style>
+      .shape {
+        width: 300px;
+        height: 500px;
+        overflow-wrap: break-word;
+        text-align: justify;
+        float: left;
+        margin: 10px;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+      .footer {
+        clear: left;
+      }
+    </style>
+    <link href='../js/prettify/prettify.css' rel='stylesheet' type='text/css'>
+---
+{% include jumbotron.html %}
+<pre class='prettyprint linenums lang-html'><!--
+-->&lt;script src='clipper.js' type='text/javascript'&gt;&lt;/script&gt;
+&lt;script src='exclusion-punch.js' type='text/javascript'&gt;&lt;/script&gt;
+&lt;script&gt;window.onload = ExclusionPunch.run;&lt;/script&gt;
+...
+&lt;div data-exclude-shape='polygon(300px 150px, 213.4px 200px, 213.4px 300px, 300px 350px)'&gt;
+  Still, for many days they grieved...
+&lt;/div&gt;
+&lt;div data-exclude-shape='polygon(0 150px, 86.6px 200px, 86.6px 300px, 0 350px)'&gt;
+  The Scarecrow was now the ruler...
+&lt;/div&gt;<!--
+--></pre>
+<p class='alert alert-info'>This is still relatively new, so only polygons with pixel coordinates will work. As you can see from the source, <a href='sourceforge.net/projects/jsclipper/'>jsclipper</a> is required. Give a holler if you find something that isn't working.</p>
+<div class='shape' data-exclude-shape='polygon(300px 150px, 213.4px 200px, 213.4px 300px, 300px 350px)'>
+<p>Still, for many days they grieved over the loss of the Wonderful Wizard, and would not be comforted.</p>
+
+<p>Dorothy wept bitterly at the passing of her hope to get home to Kansas again; but when she thought it all over she was glad she had not gone up in a balloon.  And she also felt sorry at losing Oz, and so did her companions.</p>
+
+<p>The Tin Woodman came to her and said:</p>
+
+<p>"Truly I should be ungrateful if I failed to mourn for the man who gave me my lovely heart.  I should like to cry a little because Oz is gone, if you will kindly wipe away my tears, so that I shall not rust."</p>
+
+<p>"With pleasure," she answered, and brought a towel at once.  Then the Tin Woodman wept for several minutes, and she watched the tears carefully and wiped them away with the towel.  When he had finished, he thanked her kindly and oiled himself thoroughly with his jeweled oil-can, to guard against mishap.</p>
+</div>
+<div class='shape' data-exclude-shape='polygon(0 150px, 86.6px 200px, 86.6px 300px, 0 350px)'>
+<p>The Scarecrow was now the ruler of the Emerald City, and although he was not a Wizard the people were proud of him.  "For," they said, "there is not another city in all the world that is ruled by a stuffed man."  And, so far as they knew, they were quite right.</p>
+
+<p>The morning after the balloon had gone up with Oz, the four travelers met in the Throne Room and talked matters over.  The Scarecrow sat in the big throne and the others stood respectfully before him.</p>
+
+<p>"We are not so unlucky," said the new ruler, "for this Palace and the Emerald City belong to us, and we can do just as we please.  When I remember that a short time ago I was up on a pole in a farmer's cornfield, and that now I am the ruler of this beautiful City, I am quite satisfied with my lot."</p>
+
+<p>"I also," said the Tin Woodman, "am well-pleased with my new heart; and, really, that was the only thing I wished in all the world."</p>
+
+<p>"For my part, I am content in knowing I am as brave as any beast that ever lived, if not braver," said the Lion modestly.</p>
+</div>
