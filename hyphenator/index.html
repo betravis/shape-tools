@@ -17,6 +17,11 @@ script: |
             value = Hyphenator.hyphenate(value, 'en-us');
             text.value = value;
         }
+        function copyEscaped() {
+            var value = document.getElementById('text').value;
+            value = value.replace(/\u00ad/g, '&shy;');
+            window.prompt('Copy to clipboard: Cmd/Ctl+C, Enter', value);
+        }
     </script>
 style: |
     <link rel='stylesheet' type='text/css' href='../css/bootstrap-forms.min.css' />
@@ -31,13 +36,17 @@ style: |
     </style>
 ---
 {% include jumbotron.html %}
+<p class='alert alert-info'>Soft hyphens are invisible until they break a line. Use 'copy escaped' to copy a version with these characters escaped using &amp;shy;</p>
 <form style='margin: 0 auto'>
     <textarea id='text' class='hyphenate'>
 Try out your own text below...
 
 "I tell thee again, Gabriel, that&mdash;" But again the boat tore ahead as if dragged by fiends. Nothing was said for some moments, while a succession of riotous waves rolled by, which by one of those occasional caprices of the seas were tumbling, not heaving it. Meantime, the hoisted sperm whale's head jogged about very violently, and Gabriel was seen eyeing it with rather more apprehensiveness than his archangel nature seemed to warrant.
     </textarea>
-    <input type='button' style='display:block' class='btn btn-primary' value='Hyphenate' onclick='formSubmit()'/>
+    <div>
+        <input type='button' class='btn btn-primary' value='Hyphenate' onclick='formSubmit()'/>
+        <input type='button' class='btn' value='Copy Escaped' onclick='copyEscaped()'/>
+    </div>
 </form>
 <p class='footer'>This demo uses the <a href='http://code.google.com/p/hyphenator/'>Hyphenator</a>
 Library. Hyphenator offers support for dynamically modifying the text on your
