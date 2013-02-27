@@ -113,7 +113,8 @@ function shapeOutsideToSVG(shapeInside, elem, style) {
             result = "<ellipse cx='50%' cy='50%' rx='50%' ry='50%' />";
             break;
         case 'polygon':
-            // FIXME this does not work
+            // FIXME this only works for percentages and px
+            left = top = width = height = 0;
             var fillRule = (args[0].search(/nonzero|evenodd/i) >= 0 ? args.shift() : "nonzero");
             var points = args.map(function(curr, index, arr) {
                 curr = curr.replace(/\s+/, ',');
@@ -125,10 +126,32 @@ function shapeOutsideToSVG(shapeInside, elem, style) {
                         case 'px':
                         default:
                     }
+                    if (offset) {
+                        if (top > digit) top = digit;
+                        if (height < digit) height = digit;
+                    } else {
+                        if (left > digit) left = digit;
+                        if (width < digit) width = digit;
+                    }
                     return digit.toString();
                 });
                 return curr;
             });
+            // normalize all the points
+            height -= top;
+            width -= left;
+            points.forEach(function (curr, index, arr) {
+                curr = curr.replace(/(-?\d+(?:\.\d+)?)/g, function ($0, $1, offset) {
+                    var digit = parseFloat($1);
+                    digit -= offset ? top : left;
+                    return digit.toString();
+                });
+                arr[index] = curr;
+            });
+            left = left + "px";
+            top = top + "px";
+            width = width + "px";
+            height = height + "px";
             points = points.join(' ');
             result = format("<polygon fill-rule='{0}' points='{1}' />", fillRule, points);
             break;
