@@ -137,8 +137,17 @@ function shapeOutsideToSVG(shapeInside, elem, style) {
                 });
                 return curr;
             });
+            // normalize all the points
             height -= top;
             width -= left;
+            points.forEach(function (curr, index, arr) {
+                curr = curr.replace(/(-?\d+(?:\.\d+)?)/g, function ($0, $1, offset) {
+                    var digit = parseFloat($1);
+                    digit -= offset ? top : left;
+                    return digit.toString();
+                });
+                arr[index] = curr;
+            });
             left = left + "px";
             top = top + "px";
             width = width + "px";
