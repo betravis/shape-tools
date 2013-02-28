@@ -1,0 +1,9 @@
+{
+  "name": "shape-tools",
+  "version": "0.1.0",
+  "description": "A collection of tools for developing with the CSS Exclusions and Shapes spec",
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-contrib-uglify": "~0.1.2"
+  }
+}
