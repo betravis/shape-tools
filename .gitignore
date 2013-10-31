@@ -1,2 +1,3 @@
 # ignore the jekyll-generated site
 _site
+node_modules
