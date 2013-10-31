@@ -1,0 +1,99 @@
+<html>
+<head>
+<style>
+.container {
+    border: 10px solid blue;
+    width: 600px;
+    height: 400px;
+}
+.shape {
+    width: 100px;
+    height: 100px;
+    float: left;
+    border: 10px solid green;
+    position: relative;
+}
+.one {
+    shape-outside: rectangle(0, 0, 50px, 50px);
+    shape-inside: circle(50px, 50px, 50px);
+}
+.two {
+    shape-outside: rectangle(10px, 10px, 40px, 40px, 5px, 10px);
+}
+.three {
+    shape-outside: ellipse(75px, 75px, 25px, 50px);
+}
+.four {
+    shape-outside: polygon(nonzero, 0 0, 10em 10em, 0 10em);
+}
+</style>
+<script src='ss.js'></script>
+<script>
+window.onload = function() {
+    ShowShapes.toggleOverlay();
+}
+</script>
+</head>
+<body>
+<div class='container'>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+<div class='shape one'></div>
+<div class='shape two'></div>
+<div class='shape three'></div>
+<div class='shape four'></div>
+
+This is some text that I swear should eventually break oh no does it not?
+</div>
+</body>
+</html>

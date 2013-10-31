@@ -33,15 +33,53 @@ style: |
             padding-top: 100%;
         }
     </style>
+script: |
+    <script>
+        function format() {
+            var outerArgs = arguments;
+            return outerArgs[0].replace(/{(\d+)}/g, function($0, $1) {
+                var num = parseInt($1);
+                return (num >= 0 && num < outerArgs.length - 1) ? outerArgs[num + 1] : '';
+            });
+        }
+        window.onload = function() {
+            var href = window.location.href;
+            href = href.replace(/\/[^\/]*$/, '/'); // trim off the pathname
+            var script = 
+                "javascript:(\
+                    function () {\
+                        if (window.ShowShapes) { window.ShowShapes.toggleOverlay() }\
+                        else {\
+                            var s = document.body.appendChild(document.createElement('script'));\
+                            s.src='{0}';\
+                            s.onload = function(){ window.ShowShapes.toggleOverlay(); }\
+                        }\
+                    }\
+                )();"
+            // remove whitespace that isn't separating word characters
+            script = script.replace(/\s+(\W)/g, '$1');
+            script = script.replace(/(\W)\s+/g, '$1');
+            var min = format(script, href + 'ss.min.js');
+            var src = format(script, href + 'ss.js');
+
+            var elems = document.querySelectorAll('.btn.min');
+            var i;
+            for (i = 0; i < elems.length; i++)
+                elems[i].href = min;
+            elems = document.querySelectorAll('.btn.src');
+            for (i = 0; i < elems.length; i++)
+                elems[i].href = src;
+        }
+    </script>
 ---
 <header class='jumbotron subhead'>
     <h1>Show Shapes Bookmarklet</h1>
     <p class='lead'>Clicking the bookmarklet will generate an overlay for shapes in your css. To save it, just drag it up to your bookmarks bar.</p>
-    <p><a class="btn btn-primary" href="javascript:(function(){if(window.showShapesBookmarklet){window.showShapesBookmarklet()}else{document.body.appendChild(document.createElement('script')).src='http://betravis.github.com/shape-tools/show-shapes/ss.min.js';}})();"><i class='icon-bookmark'></i> Show Shapes Bookmarklet</a></p>        
+    <p><a class="btn btn-primary min" href="#"><i class='icon-bookmark'></i> Show Shapes Bookmarklet</a></p>
 </header>
 
-<p><a class="btn" href="javascript:(function(){if(window.showShapesBookmarklet){window.showShapesBookmarklet()}else{document.body.appendChild(document.createElement('script')).src='ss.js';}})();">Local Test</a>
-<a class="btn" href="javascript:(function(){if(window.showShapesBookmarklet){window.showShapesBookmarklet()}else{document.body.appendChild(document.createElement('script')).src='ss.min.js';}})();">Local Min Test</a></p>
+<p><a class="btn min" href="#">Test it out (minified)</a>
+<a class="btn src" href="#">Test it out (uncompressed)</a></p>
 
 <div class='row'>
     <div class='span6'>

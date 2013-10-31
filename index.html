@@ -10,7 +10,7 @@ items:
   name: Show Shapes
   content: |
    <p>This bookmarklet will display the CSS shapes on a page. You can drag it up to your bookmarks bar to start using it immediately, or check out the Show Shapes page for more information.<p>
-   <p><a class="btn" href="javascript:(function(){if(window.showShapesBookmarklet){window.showShapesBookmarklet()}else{document.body.appendChild(document.createElement('script')).src='http://betravis.github.com/shape-tools/show-shapes/ss.min.js';}})();">Bookmarklet</a>
+   <p><a class="btn" href="javascript:(function(){if(window.ShowShapes){window.ShowShapes.toggleOverlay()}else{var s=document.body.appendChild(document.createElement('script'));s.src='http://betravis.github.io/shape-tools/show-shapes/ss.js';s.onload=function(){window.ShowShapes.toggleOverlay();}}})();">Bookmarklet</a>
    <a class='btn btn-primary' href='show-shapes/'>More Info</a></p>
  - 
   span: span4
