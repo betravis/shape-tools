@@ -14,23 +14,38 @@
     position: relative;
 }
 .one {
+    -webkit-shape-outside: rectangle(0, 0, 50px, 50px);
     shape-outside: rectangle(0, 0, 50px, 50px);
+    -webkit-shape-inside: circle(50px, 50px, 50px);
     shape-inside: circle(50px, 50px, 50px);
 }
 .two {
+    -webkit-shape-outside: rectangle(10px, 10px, 40px, 40px, 5px, 10px);
     shape-outside: rectangle(10px, 10px, 40px, 40px, 5px, 10px);
 }
 .three {
+    -webkit-shape-outside: ellipse(75px, 75px, 25px, 50px);
     shape-outside: ellipse(75px, 75px, 25px, 50px);
 }
 .four {
+    -webkit-shape-outside: polygon(nonzero, 0 0, 10em 10em, 0 10em);
     shape-outside: polygon(nonzero, 0 0, 10em 10em, 0 10em);
 }
 </style>
 <script src='ss.js'></script>
 <script>
 window.onload = function() {
-    ShowShapes.toggleOverlay();
+    //ShowShapes.toggleOverlay();
+    var iframe = document.querySelector('iframe.container');
+    var iwindow = iframe.contentWindow;
+    var bodyContent = document.body.innerHTML;
+    var styleContent = document.querySelector('style').innerHTML;
+    (function(window, document) {
+        var style = document.createElement('style');
+        style.innerHTML = styleContent;
+        document.querySelector('head').appendChild(style);
+        document.body.innerHTML = bodyContent;
+    })(iwindow, iwindow.document);
 }
 </script>
 </head>
@@ -38,62 +53,8 @@ window.onload = function() {
 <div class='container'>
 <div class='shape one'></div>
 <div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-<div class='shape one'></div>
-<div class='shape two'></div>
-<div class='shape three'></div>
-<div class='shape four'></div>
-
 This is some text that I swear should eventually break oh no does it not?
 </div>
+<iframe class='container'></iframe>
 </body>
 </html>

@@ -15,12 +15,15 @@ var shapeOutsideProperties = [
     'webkitShapeOutside'
 ];
 
-function ShapeInfo(elem) {
+function ShapeInfo(elem, offsetLeft, offsetTop) {
+    if (!offsetLeft) offsetLeft = 0;
+    if (!offsetTop) offsetTop = 0;
+
     this.elem = elem;
     this.style = getComputedStyle(elem);
 
     this.unitsMap = this.generateUnitsMap();
-    this.bounds = this.generateBounds();
+    this.bounds = this.generateBounds(offsetLeft, offsetTop);
     this.shapeInside = this.parseShape(this.getShapeInside());
     this.shapeOutside = this.parseShape(this.getShapeOutside());
 }
@@ -107,11 +110,11 @@ ShapeInfo.prototype.toPixels = function(length, direction /* ShapeInfo constant 
 }
 
 /* Bounds in viewport coordinates */
-ShapeInfo.prototype.generateBounds = function() {
+ShapeInfo.prototype.generateBounds = function(offsetLeft, offsetTop) {
     var shapeRect = this.elem.getBoundingClientRect();
     var shapeRect = {
-        x: shapeRect.left + document.documentElement.scrollLeft,
-        y: shapeRect.top + document.documentElement.scrollTop,
+        x: shapeRect.left + offsetLeft,
+        y: shapeRect.top + offsetTop,
         width: shapeRect.width,
         height: shapeRect.height
     }
@@ -348,6 +351,16 @@ function applyStyles(element, styles) {
         element.style[property] = styles[property];
 }
 
+function shapeInfosFor(document, offsetLeft, offsetTop) {
+    var result = [];
+    var elems = document.getElementsByTagName('*');
+    for (var i = 0; i < elems.length; i++) {
+        var elem = elems[i];
+        if (ShapeInfo.hasShapes(elem))
+            result.push(new ShapeInfo(elem, offsetLeft, offsetTop));
+    }
+    return result;
+}
 function addOverlay() {
     var container = document.createElement('div');
     container.id = 'show-shapes-overlay';
@@ -355,7 +368,7 @@ function addOverlay() {
         position: 'absolute',
         top: '0',
         left: '0',
-        'z-index': '1040' // Bootstrap uses 1030 for a navbar :(
+        zIndex: '1040' // Bootstrap uses 1030 for a navbar :(
     }, property;
     applyStyles(container, styles);
 
@@ -364,8 +377,14 @@ function addOverlay() {
     styles = {
         position: 'fixed',
         top: '1em',
-        right: '1em'
-    }
+        right: '1em',
+        background: '#1e90ff',
+        border: '0',
+        padding: '0.5em',
+        color: 'white',
+        fontSize: '1.2em',
+        borderRadius: '0.5em'
+    };
     applyStyles(button, styles);
     button.onclick = toggleOverlay;
 
@@ -381,11 +400,13 @@ function addOverlay() {
     document.body.appendChild(container);
 
     shapes = [];
-    var elems = document.getElementsByTagName('*');
-    for (var i = 0; i < elems.length; i++) {
-        var elem = elems[i];
-        if (ShapeInfo.hasShapes(elem))
-            shapes.push(new ShapeInfo(elem));
+    shapes = shapes.concat(shapeInfosFor(document, window.pageXOffset, window.pageYOffset));
+    var frames = document.querySelectorAll('iframe'); // this could be done via window.frames, but would be harder to calculate the offsets
+    var frame, offset;
+    for (var i = 0; i < frames.length; i++) {
+        frame = frames[i];
+        offset = frame.getBoundingClientRect();
+        shapes = shapes.concat(shapeInfosFor(frame.contentDocument, offset.left + window.pageXOffset + frame.clientLeft, offset.top + window.pageYOffset + frame.clientTop));
     }
 
     window.addEventListener('resize', draw, false);
