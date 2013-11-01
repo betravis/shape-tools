@@ -43,7 +43,7 @@ function getProperty(properties, style) {
 
 function setProperty(properties, style, value) {
     return properties.reduce(function(prior, property) {
-        return prior || style[property] = value;
+        return prior || (style[property] = value);
     }, null);
 }
 
