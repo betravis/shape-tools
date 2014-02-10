@@ -5,7 +5,8 @@ shapetest: true
 style: |
     <style>
         .rectangle {
-            -webkit-shape-inside: rectangle(0, 0, 100%, 100%, 15%, 15%);
+            -webkit-shape-inside: inset(round 15%);
+            shape-inside: inset(round 15%);
             position: absolute;
             top: 6.75%;
             left: 6.75%;
@@ -16,6 +17,7 @@ style: |
         }
         .hexagon {
             -webkit-shape-inside: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+            shape-inside: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
             position: absolute;
             top: 6.75%;
             left: 0;
@@ -74,7 +76,7 @@ script: |
 ---
 <header class='jumbotron subhead'>
     <h1>Show Shapes Bookmarklet</h1>
-    <p class='lead'>Clicking the bookmarklet will generate an overlay for shapes in your css. To save it, just drag it up to your bookmarks bar.</p>
+    <p class='lead'>Clicking the bookmarklet will generate an overlay for shapes in your css. To save it, just drag it up to your bookmarks bar. Note that this has been updated (Feb 2, 2014) to work with the current version of the shapes syntax. For details, check out the <a href='http://dev.w3.org/csswg/css-shapes/'>specification</a>.</p>
     <p><a class="btn btn-primary min" href="#"><i class='icon-bookmark'></i> Show Shapes Bookmarklet</a></p>
 </header>
 

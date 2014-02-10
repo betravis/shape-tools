@@ -1,0 +1,134 @@
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Shape Parsing Tests</title>
+<link rel='stylesheet' href='../node_modules/mocha/mocha.css'>
+</head>
+<body>
+<div id='mocha'></div>
+<script src='../node_modules/mocha/mocha.js'></script>
+<script src='../node_modules/chai/chai.js'></script>
+<script src='ss.js'></script>
+<script>
+mocha.setup('bdd');
+mocha.checkLeaks();
+var expect = chai.expect;
+
+var basicShapeTests = {
+    styles: {
+        margin: '1px 2px 3px 4px',
+        'border-width': '1px 2px 3px 4px',
+        'border-style': 'solid',
+        'border-color': 'transparent',
+        'padding': '1px 2px 3px 4px',
+        'width': '100px',
+        'height': '100px'
+    },
+    tests: [
+        {
+            shape: 'inset(1px 2px 3px 4px round 5px 6px 7px 8px / 9px 10px 11px 12px)',
+            result: 'inset(1 2 3 4 round 5 6 7 8 / 9 10 11 12)'
+        },
+        {
+            shape: 'circle(50px)',
+            resultInside: 'circle(50 at 50 50)',
+            resultOutside: 'circle(50 at 59 56)'
+        },
+        {
+            shape: 'ellipse()',
+            resultInside: 'ellipse(50 50 at 50 50)',
+            resultOutside: 'ellipse(59 56 at 59 56)'
+        },
+        {
+            shape: 'polygon(nonzero, 1px 2px, 3px 4px, 5px 6px)',
+            result: 'polygon(nonzero, 1 2, 3 4, 5 6)'
+        }
+    ],
+    runTest: function(test) {
+        var fn = test.only ? it.only : it;
+        fn(test.shape, function() {
+            var div = document.createElement('div');
+            var styles = basicShapeTests.styles;
+            styles['-webkit-shape-inside'] = test.shape;
+            styles['shape-inside'] = test.shape;
+            styles['-webkit-shape-outside'] = test.shape;
+            styles['shape-outside'] = test.shape;
+            for (var prop in styles)
+                div.style.setProperty(prop, styles[prop]);
+            document.body.appendChild(div);
+
+            var shapeInfo = new ShowShapes.ShapeInfo(div);
+            expect(shapeInfo.shapeInside.printShape()).to.equal(test.resultInside ? test.resultInside : test.result);
+            expect(shapeInfo.shapeOutside.printShape()).to.equal(test.resultOutside ? test.resultOutside : test.result);
+
+            document.body.removeChild(div);
+        })
+    }
+}
+
+var boxTests = {
+    styles: {
+        margin: '1px 2px 3px 4px',
+        'border-width': '1px 2px 3px 4px',
+        'border-style': 'solid',
+        'border-color': 'transparent',
+        'border-radius': '20px',
+        'padding': '1px 2px 3px 4px',
+        'width': '100px',
+        'height': '100px'
+    },
+    tests: [
+        {
+            shape: 'content-box',
+            result: 'content-box { x: 8, y: 2, width: 100, height: 100, radii: 12 16 16 12 / 18 18 14 14 }'
+        },
+        {
+            shape: 'padding-box',
+            result: 'padding-box { x: 4, y: 1, width: 106, height: 104, radii: 16 18 18 16 / 19 19 17 17 }'
+        },
+        {
+            shape: 'border-box',
+            result: 'border-box { x: 0, y: 0, width: 112, height: 108, radii: 20 20 20 20 / 20 20 20 20 }'
+        },
+        {
+            shape: 'margin-box',
+            result: 'margin-box { x: -4, y: -1, width: 118, height: 112, radii: 24 22 22 24 / 21 21 23 23 }'
+        }
+    ],
+    runTest: function(test) {
+        var fn = test.only ? it.only : it;
+        fn(test.shape, function() {
+            var div = document.createElement('div');
+            var styles = boxTests.styles;
+            styles['-webkit-shape-inside'] = test.shape;
+            styles['shape-inside'] = test.shape;
+            styles['-webkit-shape-outside'] = test.shape;
+            styles['shape-outside'] = test.shape;
+            for (var prop in styles)
+                div.style.setProperty(prop, styles[prop]);
+            document.body.appendChild(div);
+
+            var shapeInfo = new ShowShapes.ShapeInfo(div);
+            expect(shapeInfo.shapeInside.printBox()).to.equal(test.resultInside ? test.resultInside : test.result);
+            expect(shapeInfo.shapeOutside.printBox()).to.equal(test.resultOutside ? test.resultOutside : test.result);
+
+            document.body.removeChild(div);
+        })
+    }
+}
+
+describe('ShapeInfo correctly parses shapes', function() {
+    basicShapeTests.tests.forEach(function(test) {
+        basicShapeTests.runTest(test);
+    });
+})
+
+describe('ShapeInfo correctly parses boxes', function() {
+    boxTests.tests.forEach(function(test) {
+        boxTests.runTest(test);
+    });
+})
+mocha.run();
+</script>
+</body>
+</html>
